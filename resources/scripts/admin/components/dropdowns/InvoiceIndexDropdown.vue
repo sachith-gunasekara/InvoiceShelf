@@ -8,106 +8,65 @@
     </template>
 
     <!-- Edit Invoice  -->
-    <router-link
-      v-if="userStore.hasAbilities(abilities.EDIT_INVOICE)"
-      :to="`/admin/invoices/${row.id}/edit`"
-    >
+    <router-link v-if="userStore.hasAbilities(abilities.EDIT_INVOICE)" :to="`/admin/invoices/${row.id}/edit`">
       <BaseDropdownItem v-show="row.allow_edit">
-        <BaseIcon
-          name="PencilIcon"
-          class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-500"
-        />
+        <BaseIcon name="PencilIcon" class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-500" />
         {{ $t('general.edit') }}
       </BaseDropdownItem>
     </router-link>
 
     <!-- Copy PDF url  -->
     <BaseDropdownItem v-if="route.name === 'invoices.view'" @click="copyPdfUrl">
-      <BaseIcon
-        name="LinkIcon"
-        class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-500"
-      />
+      <BaseIcon name="LinkIcon" class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-500" />
       {{ $t('general.copy_pdf_url') }}
     </BaseDropdownItem>
 
     <!-- View Invoice  -->
-    <router-link
-      v-if="
-        route.name !== 'invoices.view' &&
-        userStore.hasAbilities(abilities.VIEW_INVOICE)
-      "
-      :to="`/admin/invoices/${row.id}/view`"
-    >
+    <router-link v-if="
+      route.name !== 'invoices.view' &&
+      userStore.hasAbilities(abilities.VIEW_INVOICE)
+    " :to="`/admin/invoices/${row.id}/view`">
       <BaseDropdownItem>
-        <BaseIcon
-          name="EyeIcon"
-          class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-500"
-        />
+        <BaseIcon name="EyeIcon" class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-500" />
         {{ $t('general.view') }}
       </BaseDropdownItem>
     </router-link>
 
     <!-- Send Invoice Mail  -->
     <BaseDropdownItem v-if="canSendInvoice(row)" @click="sendInvoice(row)">
-      <BaseIcon
-        name="PaperAirplaneIcon"
-        class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-500"
-      />
+      <BaseIcon name="PaperAirplaneIcon" class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-500" />
       {{ $t('invoices.send_invoice') }}
     </BaseDropdownItem>
 
     <!-- Resend Invoice -->
     <BaseDropdownItem v-if="canReSendInvoice(row)" @click="sendInvoice(row)">
-      <BaseIcon
-        name="PaperAirplaneIcon"
-        class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-500"
-      />
+      <BaseIcon name="PaperAirplaneIcon" class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-500" />
       {{ $t('invoices.resend_invoice') }}
     </BaseDropdownItem>
 
     <!-- Record payment  -->
     <router-link :to="`/admin/payments/${row.id}/create`">
-      <BaseDropdownItem
-        v-if="row.status == 'SENT' && route.name !== 'invoices.view'"
-      >
-        <BaseIcon
-          name="CreditCardIcon"
-          class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-500"
-        />
+      <BaseDropdownItem v-if="row.status == 'SENT' && route.name !== 'invoices.view'">
+        <BaseIcon name="CreditCardIcon" class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-500" />
         {{ $t('invoices.record_payment') }}
       </BaseDropdownItem>
     </router-link>
 
     <!-- Mark as sent Invoice -->
     <BaseDropdownItem v-if="canSendInvoice(row)" @click="onMarkAsSent(row.id)">
-      <BaseIcon
-        name="CheckCircleIcon"
-        class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-500"
-      />
+      <BaseIcon name="CheckCircleIcon" class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-500" />
       {{ $t('invoices.mark_as_sent') }}
     </BaseDropdownItem>
 
     <!-- Clone Invoice into new invoice  -->
-    <BaseDropdownItem
-      v-if="userStore.hasAbilities(abilities.CREATE_INVOICE)"
-      @click="cloneInvoiceData(row)"
-    >
-      <BaseIcon
-        name="DocumentTextIcon"
-        class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-500"
-      />
+    <BaseDropdownItem v-if="userStore.hasAbilities(abilities.CREATE_INVOICE)" @click="cloneInvoiceData(row)">
+      <BaseIcon name="DocumentTextIcon" class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-500" />
       {{ $t('invoices.clone_invoice') }}
     </BaseDropdownItem>
 
     <!--  Delete Invoice  -->
-    <BaseDropdownItem
-      v-if="userStore.hasAbilities(abilities.DELETE_INVOICE)"
-      @click="removeInvoice(row.id)"
-    >
-      <BaseIcon
-        name="TrashIcon"
-        class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-500"
-      />
+    <BaseDropdownItem v-if="userStore.hasAbilities(abilities.DELETE_INVOICE)" @click="removeInvoice(row.id)">
+      <BaseIcon name="TrashIcon" class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-500" />
       {{ $t('general.delete') }}
     </BaseDropdownItem>
   </BaseDropdown>
@@ -135,7 +94,7 @@ const props = defineProps({
   },
   loadData: {
     type: Function,
-    default: () => {},
+    default: () => { },
   },
 })
 
@@ -239,13 +198,28 @@ async function onMarkAsSent(id) {
 }
 
 async function sendInvoice(invoice) {
-  modalStore.openModal({
-    title: t('invoices.send_invoice'),
-    componentName: 'SendInvoiceModal',
-    id: invoice.id,
-    data: invoice,
-    variant: 'sm',
-  })
+  sendWhatsappUpdate()
+}
+
+function sendWhatsappUpdate() {
+  let baseUrl = `https://wa.me/${props.row.customer.phone}`
+
+  const salutation = `*${props.row.company.name}*\n\n*Dear ${props.row.customer.name}*,\n\nInvoice Number: ${props.row.invoice_number}\n\n`
+  const items = `${props.row.items.map((item, index) => `${index + 1}) ${item.name} \n  ${(item.price / 100).toFixed(2)} x ${item.quantity} = ${(item.total / 100).toFixed(2)}`).join('\n')}\n\n`
+  const delivery_date = `*Delivery date:* ${props.row.due_date}\n\n`
+  const total = `*Total:* ${(props.row.total / 100).toFixed(2)}\n\n`
+  const balance = `*Balance:* ${(props.row.due_amount / 100).toFixed(2)}\n\n`
+  const invoice_link = `You can view your invoice online at ${props.row.invoice_pdf_url}\n\n`
+
+  const text = salutation + items + delivery_date + total + balance + invoice_link + "Thank you"
+
+  const params = {
+    text: text
+  }
+
+  const whatsappUrl = utils.buildUrl(baseUrl, params)
+
+  window.open(whatsappUrl, '_blank');
 }
 
 function copyPdfUrl() {
