@@ -418,7 +418,7 @@
     "notes": "Notes",
     "view": "View",
     "send_invoice": "Send Invoice",
-    "resend_invoice": "Resend Invoice",
+    "resend_invoice": "WhatsApp Invoice",
     "invoice_template": "Invoice Template",
     "conversion_message": "Invoice cloned successful",
     "template": "Select Template",
