@@ -202,9 +202,9 @@ async function sendInvoice(invoice) {
 }
 
 function sendWhatsappUpdate() {
-  let baseUrl = `https://wa.me/${props.row.customer.phone}`
+  let baseUrl = `https://wa.me/${props.row.customer.name}`
 
-  const salutation = `*${props.row.company.name}*\n\n*Dear ${props.row.customer.name}*,\n\nInvoice Number: ${props.row.invoice_number}\n\n`
+  const salutation = `*${props.row.company.name}*\n\nInvoice Number: ${props.row.invoice_number}\n\n`
   const items = `${props.row.items.map((item, index) => `${index + 1}) ${item.name} \n  ${(item.price / 100).toFixed(2)} x ${item.quantity} = ${(item.total / 100).toFixed(2)}`).join('\n')}\n\n`
   const delivery_date = `*Delivery date:* ${props.row.due_date}\n\n`
   const total = `*Total:* ${(props.row.total / 100).toFixed(2)}\n\n`
